@@ -18,6 +18,8 @@ class Player(Hero):
 
     max_arm_length = 10
 
+    energy_penalty = 0
+
     def __init__(self):
         super().__init__()
         self.skills: List[skills.SkillCard] = []
@@ -61,8 +63,9 @@ class Player(Hero):
         interface.print_line()
         print(f"Вы выбрали умение: {skill}")
         print(skill.description)
-        if self.energy < skill.energy:
-            print(f"Ты не можешь кастонуть эту дичь из-за энергии ({self.energy}/{skill.energy})")
+        needed_energy = skill.energy + self.energy_penalty
+        if self.energy < needed_energy:
+            print(f"Ты не можешь кастонуть эту дичь из-за энергии ({self.energy}/{needed_energy})")
             return
 
         ans = input('Кастуем? (y/n): ')
@@ -86,8 +89,12 @@ class Player(Hero):
         self.arm.remove(skill)
 
     def before_move(self):
+        self.energy_penalty = 0
         self.pick_up_cards()
         super().before_move()
+
+    def increase_penalty(self):
+        self.energy_penalty += 1
 
     def pick_up_cards(self, n=1):
         for _ in range(n):
@@ -107,5 +114,5 @@ class Player(Hero):
             self.pick_up_cards()
 
     def __str__(self):
-        return super().__str__() + '\n' + self.get_skills_str()
+        return super().__str__() + '\n' + self.get_skills_str() + f"\nШтраф:{self.energy_penalty}"
 

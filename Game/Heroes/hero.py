@@ -102,18 +102,6 @@ class Hero:
     def filter_alive_heroes(heroes_list):
         return list(filter(lambda hero: hero.alive, heroes_list))
 
-    # def get_influence(self, specials: dict, states_list: list, effects_list: list):
-    #     if 'damage' in specials:
-    #         self.get_damage(specials['damage'])
-    #     if 'magic_damage' in specials:
-    #         self.loose_hp(specials['magic_damage'])
-    # 
-    #     for state in states_list:
-    #         self.get_state(state)
-    # 
-    #     for effect in effects_list:
-    #         self.get_effect(effect)
-
     def get_damage(self, damage):
         remaining_damage = damage - self.armor
         print(f"{self.name} заблокировал {self.armor} урона. Прошло {remaining_damage}/{damage} урона.")
@@ -192,9 +180,9 @@ class Hero:
         self.enemy = enemy
 
 
-class Bot(Hero):
+class NPC(Hero):
     is_user_control = False
 
-    def what_to_do(self, enemy):
+    def what_to_do(self):
         pass
 

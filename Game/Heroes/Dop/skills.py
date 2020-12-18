@@ -26,8 +26,9 @@ class SkillCard:
         raise NotImplementedError
 
     def after_cast(self, player, enemy):
-        player.take_energy(self.energy)
+        player.take_energy(self.energy + player.energy_penalty)
         self.player_remove_skill_from_arm(player)
+        player.increase_penalty()
 
     def player_remove_skill_from_arm(self, player):
         player.remove_skill_from_arm(self)
@@ -70,8 +71,8 @@ class PlevokOtchaiania(SkillCard):
             return False
         hero = enemy.team[number - 1]
         print(f"ХУЯК - плевчина смачно приземлилась на лицо {hero.name}...")
-        state = effects.Wetness(self.value)
-        hero.get_state(state)
+        effect = effects.Wetness(self.value)
+        hero.get_effect(effect)
         self.after_cast(player, enemy)
 
 
@@ -114,7 +115,7 @@ class UdarSRazvorota(SkillCard):
             else:
                 result = interface.check_chance(50)
             if result:
-                enemy.get_effect(effects.Fallen(1))
+                enemy.get_effect(states.Fallen(1))
             else:
                 print(f"{enemy.name} устоял на ногах")
             player.remove_effect_by_name('развернут')
@@ -122,7 +123,7 @@ class UdarSRazvorota(SkillCard):
         else:
             ans = input(f"Вы не можете ударить. Хотите использовать второй вариант? (y/n): ")
             if ans == 'y':
-                player.get_effect(effects.TurnedAround(1))
+                player.get_effect(states.TurnedAround(1))
                 player.pick_up_cards()
                 self.player_remove_skill_from_arm(player)
             else:
@@ -147,7 +148,7 @@ class PnutLezhachih(SkillCard):
         hero.get_damage(round(player.strength / 2) + player.fighting)
         if interface.check_chance(25):
             print(f"Также удалось прибить врага к земле")
-            hero.get_effect(effects.Fallen(1))
+            hero.get_state(states.Fallen(1))
         self.after_cast(player, enemy)
 
 
