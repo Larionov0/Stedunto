@@ -1,16 +1,21 @@
 import random
+from os import system
 
 
 class InterfaceManager:
     _instance = None
+    messages_limit = 50
 
-    def __init__(self):
-        self.instance = self
+    def __init__(self, osoznanno=False):
+        if not osoznanno:
+            raise Exception('Неосознанный выбор!')
+        InterfaceManager._instance = self
+        self.messages = []
 
     @classmethod
     def instance(cls):
         if cls._instance is None:
-            cls._instance: InterfaceManager = cls()
+            cls._instance: InterfaceManager = cls(osoznanno=True)
         return cls._instance
 
     @staticmethod
@@ -45,3 +50,25 @@ class InterfaceManager:
 
     def check_chance(self, percent):
         return random.randint(1, 100) <= percent
+
+    def print_msg(self, text):
+        print(text)
+        self.add_message(text)
+
+    def add_message(self, text):
+        self.messages.insert(0, text)
+        while len(self.messages) > self.messages_limit:
+            self.messages.pop()
+
+    def show_messages(self):
+        print('\n--= Последние сообщения =--')
+        for message in self.messages:
+            print('- - - -')
+            print(message)
+        print('- - - -')
+
+    def enter(self):
+        input('\npress <Enter>')
+
+    def clear(self):
+        system('cls')

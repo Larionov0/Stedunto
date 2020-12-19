@@ -1,10 +1,12 @@
 from . import states
+from Game.Interface import colors
 
 
 class Effect:
     name = 'state'
     value = 0
     max_value = 100
+    color = None
 
     def __init__(self, value):
         self.value = value
@@ -17,7 +19,7 @@ class Effect:
         if self.value > self.max_value:
             self.value = self.max_value
             self.on_max_reaching(hero)
-            hero.remove_state(self)
+            hero.remove_effect(self)
 
     def decrease_value(self, value, hero):
         self.value -= value
@@ -34,6 +36,7 @@ class Effect:
 class Wetness(Effect):
     name = 'влажность'
     max_value = 100
+    color = colors.CBLUE2
 
     def on_max_reaching(self, hero):
         hero.get_effect(

@@ -1,5 +1,11 @@
 from typing import List
 from .Dop import effects, states
+from ..Interface.interface import InterfaceManager
+from ..Interface import colors
+
+
+interface = InterfaceManager.instance()
+ENERGY = f'{colors.CYELLOW}енергия{colors.CEND}'
 
 
 class Hero:
@@ -15,6 +21,8 @@ class Hero:
     rage = 0
     max_rage = 100
 
+    _standard_team_number = 2
+
     sex = 'М'
     enemy = None
 
@@ -24,10 +32,27 @@ class Hero:
     can_use_skill = True
     can_make_move = True
 
-    def __init__(self):
-        self.team = [self]
+    def __init__(self, team=None):
+        self.enemy: Hero = self.enemy
+
+        if team is None:
+            team = Team(self._standard_team_number, [self])
+        self.team = team
         self.effects: List[effects.Effect] = []
         self.states: List[states.State] = []
+
+    @property
+    def colored_name(self):
+        color = colors.CBLUE if self.team.number == 1 else colors.CRED
+        return f"{color}{self.name}{colors.CEND}"
+
+    @property
+    def alive_team(self):
+        return self.team.alive_heroes
+
+    @property
+    def is_team_alive(self):
+        return len(self.alive_team) > 0
 
     def get_effects_dict(self):
         return {effect.name: effect for effect in self.effects}
@@ -43,14 +68,18 @@ class Hero:
                 state.on_getting(self)
                 return
 
-        self.effects.append(state)
+        self._add_state(state)
         state.on_getting(self)
+
+    def _add_state(self, state):
+        self.states.append(state)
+        interface.print_msg(f'На {self.colored_name} упало состояние {state.colored_name}')
     
     def remove_state(self, state, interrupt=False):
         if not interrupt:
             state.on_ending(self)
-        self.effects.remove(state)
-        print(f"Состояние {state.name} на {self.name} закончилось")
+        self.states.remove(state)
+        interface.print_msg(f"Состояние {state.colored_name} на {self.colored_name} закончилось")
 
     def remove_effect_by_name(self, effect_name):
         effect = list(filter(lambda effect: effect.name == effect_name, self.effects))[0]
@@ -72,31 +101,31 @@ class Hero:
 
     def remove_effect(self, effect):
         self.effects.remove(effect)
-        print(f"Эффект {effect.name} на {self.name} закончился")
+        interface.print_msg(f"Эффект {effect.name} на {self.name} закончился")
 
     def add_rage(self, value):
         self.rage += value
         if self.rage > self.max_rage:
             self.rage = self.max_rage
-        print(f"{self.name} ярость + {value}. Теперь у него(нее): {self.rage}")
+        interface.print_msg(f"{self.name} ярость + {value}. Теперь у него(нее): {self.rage}")
 
     def take_rage(self, value):
         self.rage -= value
         if self.rage < 0:
             self.rage = 0
-        print(f"{self.name} ярость - {value}. Теперь у него(нее): {self.energy}")
+        interface.print_msg(f"{self.name} ярость - {value}. Теперь у него(нее): {self.energy}")
 
     def add_energy(self, value):
         self.energy += value
         if self.energy > self.max_energy:
             self.energy = self.max_energy
-        print(f"{self.name} енергия + {value}. Теперь у него(нее): {self.energy}")
+        interface.print_msg(f"{self.name} {ENERGY} + {value}. Теперь у него(нее): {self.energy}")
 
     def take_energy(self, value):
         self.energy -= value
         if self.energy < 0:
             self.energy = 0
-        print(f"{self.name} енергия - {value}. Теперь у него(нее): {self.energy}")
+        interface.print_msg(f"{self.name} {ENERGY} - {value}. Теперь у него(нее): {self.energy}")
 
     @staticmethod
     def filter_alive_heroes(heroes_list):
@@ -104,19 +133,23 @@ class Hero:
 
     def get_damage(self, damage):
         remaining_damage = damage - self.armor
-        print(f"{self.name} заблокировал {self.armor} урона. Прошло {remaining_damage}/{damage} урона.")
+        interface.print_msg(f"{self.colored_name} заблокировал {self.armor} урона. Прошло {remaining_damage}/{damage} урона.")
         if remaining_damage > 0:
             self.loose_hp(remaining_damage)
 
+
     def loose_hp(self, hp):
         self.hp -= hp
-        print(f"{self.name} потерял {hp} hp. Теперь у него {self.hp}/{self.max_hp}")
+        interface.print_msg(f"{self.colored_name} потерял {hp} hp. Теперь у него {self.hp}/{self.max_hp} hp")
         self.check_is_alive()
 
     def check_is_alive(self):
         if self.hp <= 0:
-            self.alive = False
-            print(f"{self.name} die")
+            self.die()
+
+    def die(self):
+        self.alive = False
+        interface.print_msg(f"{self.colored_name} погиб (ла)")
 
     def what_to_do_menu(self):
         pass
@@ -125,16 +158,18 @@ class Hero:
         pass
 
     def make_move(self):
-        print(f"Ходит герой: {self.name}")
+        interface.print_line()
+        interface.print_msg(f"Ходит герой: {self.colored_name}")
         self.before_move()
         if not self.can_make_move:
-            print('А нет, не ходит')
+            interface.print_msg('А нет, не ходит')
         else:
             if self.is_user_control:
                 self.what_to_do_menu()
             else:
                 self.what_to_do()
         self.after_move()
+        interface.print_line()
 
     def tick_after_move_states(self):
         for state in self.states:
@@ -160,10 +195,10 @@ class Hero:
 
     @property
     def short_str(self):
-        return f"{self.name}  ({self.hp}/{self.max_hp} HP) ({self.energy}/{self.max_energy} e)"
+        return f"{self.colored_name}  ({self.hp}/{self.max_hp} HP) ({self.energy}/{self.max_energy} e)"
 
     def __str__(self):
-        return f"{self.name}  ({self.hp}/{self.max_hp})\n" \
+        return f"{self.colored_name}  ({self.hp}/{self.max_hp})\n" \
                f"strength={self.strength} | mind={self.mind} | armor={self.armor} | magic={self.magic} | energy={self.energy}/{self.max_energy} | rage={self.rage}/{self.max_rage}\n" \
                f"{self.get_states_and_effects_str()}"
 
@@ -180,9 +215,25 @@ class Hero:
         self.enemy = enemy
 
 
-class NPC(Hero):
+class Mob(Hero):
     is_user_control = False
 
     def what_to_do(self):
         pass
 
+
+class Boss(Mob):
+    pass
+
+
+class Team:
+    def __init__(self, number, heroes=None):
+        self.number = number
+        self.heroes: List[Hero] = heroes
+
+    def add_hero(self, hero):
+        self.heroes.append(hero)
+
+    @property
+    def alive_heroes(self):
+        return list(filter(lambda hero: hero.alive, self.heroes))

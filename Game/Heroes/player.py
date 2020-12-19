@@ -4,7 +4,7 @@ from .Dop import colors, skills
 from .hero import Hero
 from ..Interface.interface import InterfaceManager
 
-interface = InterfaceManager()
+interface = InterfaceManager.instance()
 
 
 class Player(Hero):
@@ -15,6 +15,8 @@ class Player(Hero):
     strength = 10
     energy = max_energy = 10
     magic = 0
+
+    _standard_team_number = 1
 
     max_arm_length = 10
 
@@ -27,12 +29,17 @@ class Player(Hero):
 
     def what_to_do_menu(self):
         while True:
-            text = f"\n\n{colors.CBLUE}---= Меню действий героя =---{colors.CEND}\n" \
+            interface.enter()
+            interface.clear()
+            c1 = len(self.alive_team)
+            c2 = len(self.enemy.alive_team)
+            text = f"{colors.CBLUE}---= Меню действий героя =---{colors.CEND}\n" \
                    f"{self}\n" \
                    f"Ваши действия:\n" \
                    f"n - закончить ход\n" \
                    f"s - использовать умение\n" \
-                   f"i - вывести всех героев\n" \
+                   f"i - вывести всех героев ({colors.CBLUE}{c1}{colors.CEND} - {colors.CRED}{c2}{colors.CEND})\n" \
+                   f"m - просмотреть последние сообщения\n" \
                    f"Ваш выбор: "
             choice = input(text)
 
@@ -41,15 +48,19 @@ class Player(Hero):
             elif choice == 's':
                 self.choose_skill_menu(self.enemy)
             elif choice == 'i':
-                print(f'\n\n')
-                print('Герои:')
-                interface.print_line()
-                print(self)
-                interface.print_line()
-                print(self.enemy)
-                interface.print_line()
+                self.print_info()
+            elif choice == 'm':
+                interface.show_messages()
             else:
                 print('Не, не пойдет')
+
+    def print_info(self):
+        print(f'\n\n')
+        print('Герои:')
+        for hero in self.alive_team + self.enemy.alive_team:
+            interface.print_line()
+            print(hero)
+        interface.print_line()
 
     def choose_skill_menu(self, enemy):
         print('Выберите умение:')
@@ -83,7 +94,7 @@ class Player(Hero):
     def add_skill_to_arm(self, skill):
         if len(self.arm) != self.max_arm_length:
             self.arm.append(skill)
-            print(f"{self.name} получил карту умения: {skill}")
+            interface.print_msg(f"{self.name} получил карту умения: {skill}")
 
     def remove_skill_from_arm(self, skill):
         self.arm.remove(skill)
@@ -108,11 +119,16 @@ class Player(Hero):
             return
         return skill_card
 
+    def die(self):
+        super().die()
+        print(f'{colors.CRED2}Вы погибли{colors.CEND}')
+        interface.enter()
+
     def before_battle(self, enemy):
         super().before_battle(enemy)
         for _ in range(4):
             self.pick_up_cards()
 
     def __str__(self):
-        return super().__str__() + '\n' + self.get_skills_str() + f"\nШтраф:{self.energy_penalty}"
+        return super().__str__() + f"\nШтраф энергии:{self.energy_penalty}" + '\n' + self.get_skills_str()
 

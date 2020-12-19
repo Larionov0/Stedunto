@@ -19,7 +19,7 @@ class SkillCard:
         for state in self.needed_hero_states:
             if state not in player.states_names():
                 result = False
-                print(f"У {self.name} нету состояния {state}.")
+                interface.print_msg(f"У {self.name} нету состояния {state}.")
         return result
 
     def cast(self, player, enemy):
@@ -50,7 +50,7 @@ class SimpleKick(SkillCard):
             return False
         hero = enemy.team[number - 1]
         interface.print_line()
-        print(f"{player.name} наносит простой ударчик по {hero.name}...")
+        interface.print_msg(f"{player.name} наносит простой ударчик по {hero.name}...")
         hero.get_damage(player.strength)
         interface.print_line()
         self.after_cast(player, enemy)
@@ -70,7 +70,7 @@ class PlevokOtchaiania(SkillCard):
         if number == 0:
             return False
         hero = enemy.team[number - 1]
-        print(f"ХУЯК - плевчина смачно приземлилась на лицо {hero.name}...")
+        interface.print_msg(f"ХУЯК - плевчина смачно приземлилась на лицо {hero.name}...")
         effect = effects.Wetness(self.value)
         hero.get_effect(effect)
         self.after_cast(player, enemy)
@@ -83,7 +83,7 @@ class Podgotovlenie(SkillCard):
     description = 'Вы тратите 2 энергии, и готовите в руку 2 карты умений'
 
     def cast(self, player, enemy):
-        print("*звуки подготовки*")
+        interface.print_msg("*звуки подготовки*")
         player.pick_up_cards()
         player.pick_up_cards()
         self.after_cast(player, enemy)
@@ -95,7 +95,6 @@ class UdarSRazvorota(SkillCard):
     freq = 2
     description = "Если вы <развернуты>, вы можете нанести удар с разворота, хорошенько трепанув соперника.\n" \
                   "При этом вы нанесете ему <strength> * 2 урона, а так-же с 50% шансом повалите врага на пол.\n" \
-                  "Если на враге нет обуви - он упадет 100 %\n" \
                   "Иначе вы можете <развернуться> на 1 ход, не теряя энергию, и добрать карту."
 
     needed_hero_states = ['развернут']
@@ -109,12 +108,7 @@ class UdarSRazvorota(SkillCard):
             hero = enemy.team[number - 1]
             hero.get_damage(player.strength * 2)
 
-            if enemy.body.parts['стопы'].is_naked():
-                print(f"{enemy.name} босоногий(ая), не удержался")
-                result = True
-            else:
-                result = interface.check_chance(50)
-            if result:
+            if interface.check_chance(50):
                 enemy.get_effect(states.Fallen(1))
             else:
                 print(f"{enemy.name} устоял на ногах")
@@ -139,7 +133,7 @@ class PnutLezhachih(SkillCard):
 
     def cast(self, player, enemy):
         print(f"Выберите лежачего врага")
-        laying_enemies = list(filter(lambda enemy: 'упавший' in enemy.effects_names(), enemy.team))
+        laying_enemies = list(filter(lambda enemy: 'упавший' in enemy.states_names(), enemy.team))
         number = interface.choose_one_from_list(laying_enemies, short_str=True)
         if number == 0:
             return False
