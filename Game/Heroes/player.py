@@ -3,6 +3,7 @@ from typing import List
 from .Dop import colors, skills
 from .hero import Hero
 from ..Interface.interface import InterfaceManager
+from ..Interface.player_interface import PlayerInterface
 
 interface = InterfaceManager.instance()
 
@@ -26,64 +27,10 @@ class Player(Hero):
         super().__init__()
         self.skills: List[skills.SkillCard] = []
         self.arm: List[skills.SkillCard] = []
+        self.player_interface = PlayerInterface(self)
 
     def what_to_do_menu(self):
-        while True:
-            interface.enter()
-            interface.clear()
-            c1 = len(self.alive_team)
-            c2 = len(self.enemy.alive_team)
-            text = f"{colors.CBLUE}---= Меню действий героя =---{colors.CEND}\n" \
-                   f"{self}\n" \
-                   f"Ваши действия:\n" \
-                   f"n - закончить ход\n" \
-                   f"s - использовать умение\n" \
-                   f"i - вывести всех героев ({colors.CBLUE}{c1}{colors.CEND} - {colors.CRED}{c2}{colors.CEND})\n" \
-                   f"m - просмотреть последние сообщения\n" \
-                   f"Ваш выбор: "
-            choice = input(text)
-
-            if choice == 'n':
-                return
-            elif choice == 's':
-                self.choose_skill_menu(self.enemy)
-            elif choice == 'i':
-                self.print_info()
-            elif choice == 'm':
-                interface.show_messages()
-            else:
-                print('Не, не пойдет')
-
-    def print_info(self):
-        print(f'\n\n')
-        print('Герои:')
-        for hero in self.alive_team + self.enemy.alive_team:
-            interface.print_line()
-            print(hero)
-        interface.print_line()
-
-    def choose_skill_menu(self, enemy):
-        print('Выберите умение:')
-        number = interface.choose_one_from_list(self.arm)
-        if number == 0:
-            return
-        skill = self.arm[number - 1]
-        self.cast_skill_menu(enemy, skill)
-
-    def cast_skill_menu(self, enemy, skill):
-        interface.print_line()
-        print(f"Вы выбрали умение: {skill}")
-        print(skill.description)
-        needed_energy = skill.energy + self.energy_penalty
-        if self.energy < needed_energy:
-            print(f"Ты не можешь кастонуть эту дичь из-за энергии ({self.energy}/{needed_energy})")
-            return
-
-        ans = input('Кастуем? (y/n): ')
-        if ans == 'y':
-            skill.cast(self, enemy)
-        else:
-            return
+        self.player_interface.what_to_do_menu()
 
     def get_skills_str(self):
         text = "Умения:\n"
@@ -128,6 +75,11 @@ class Player(Hero):
         super().before_battle(enemy)
         for _ in range(4):
             self.pick_up_cards()
+
+    def move_to_place(self, place):
+        self.place.remove_hero(self)
+        place.add_hero(self)
+        interface.print_msg(f'{colors.CGREEN}{self.name} переместился в {place}{colors.CEND}')
 
     def __str__(self):
         return super().__str__() + f"\nШтраф энергии:{self.energy_penalty}" + '\n' + self.get_skills_str()

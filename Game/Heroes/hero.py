@@ -2,6 +2,7 @@ from typing import List
 from .Dop import effects, states
 from ..Interface.interface import InterfaceManager
 from ..Interface import colors
+from ..Locations.place import Place
 
 
 interface = InterfaceManager.instance()
@@ -22,6 +23,7 @@ class Hero:
     max_rage = 100
 
     _standard_team_number = 2
+    place: Place = None
 
     sex = 'М'
     enemy = None
@@ -32,12 +34,13 @@ class Hero:
     can_use_skill = True
     can_make_move = True
 
-    def __init__(self, team=None):
+    def __init__(self, team=None, place=None):
         self.enemy: Hero = self.enemy
 
         if team is None:
             team = Team(self._standard_team_number, [self])
         self.team = team
+        self.place = place
         self.effects: List[effects.Effect] = []
         self.states: List[states.State] = []
 

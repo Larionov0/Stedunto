@@ -11,6 +11,7 @@ class InterfaceManager:
             raise Exception('Неосознанный выбор!')
         InterfaceManager._instance = self
         self.messages = []
+        self.new_messages = False
 
     @classmethod
     def instance(cls):
@@ -42,9 +43,9 @@ class InterfaceManager:
                     print(f"{i + 1} - {el}")
             number = self.input_int('Ваш выбор: ')
             if number == 0 and on_zero:
-                return 0
+                return None
             if 0 < number <= len(lst):
-                return number
+                return lst[number-1]
             else:
                 print('Ошибка с введенным числом')
 
@@ -54,6 +55,7 @@ class InterfaceManager:
     def print_msg(self, text):
         print(text)
         self.add_message(text)
+        self.new_messages = True
 
     def add_message(self, text):
         self.messages.insert(0, text)
@@ -66,6 +68,12 @@ class InterfaceManager:
             print('- - - -')
             print(message)
         print('- - - -')
+
+    def start_menu(self):
+        if self.new_messages:
+            self.enter()
+        self.clear()
+        self.new_messages = False
 
     def enter(self):
         input('\npress <Enter>')
