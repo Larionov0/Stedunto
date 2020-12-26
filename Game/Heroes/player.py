@@ -1,9 +1,11 @@
 import random
-from typing import List
+from typing import List, Optional
 from .Dop import colors, skills
 from .hero import Hero
 from ..Interface.interface import InterfaceManager
 from ..Interface.player_interface import PlayerInterface
+from ..Tasks.task import Task
+from Game import globals
 
 interface = InterfaceManager.instance()
 
@@ -28,6 +30,20 @@ class Player(Hero):
         self.skills: List[skills.SkillCard] = []
         self.arm: List[skills.SkillCard] = []
         self.player_interface = PlayerInterface(self)
+        self.target_place = None
+
+        self.tasks: List[Task] = []
+        self.main_task: Optional[Task] = None
+
+    def add_task(self, task):
+        self.tasks.append(task)
+        interface.print_msg(f"{colors.CYELLOW}У тебя новое задание: {task.name}{colors.CEND}")
+
+    def set_main_task(self, task):
+        if self.main_task:
+            self.main_task.stop()
+        self.main_task = task
+        self.main_task.start()
 
     def what_to_do_menu(self):
         self.player_interface.what_to_do_menu()
@@ -80,6 +96,12 @@ class Player(Hero):
         self.place.remove_hero(self)
         place.add_hero(self)
         interface.print_msg(f'{colors.CGREEN}{self.name} переместился в {place}{colors.CEND}')
+
+        self.main_task_check(globals.TRAVELLED_TO_PLACE_SIGNAL, place=place)
+
+    def main_task_check(self, signal, *args, **kwargs):
+        if self.main_task:
+            self.main_task.check(signal, *args, **kwargs)
 
     def __str__(self):
         return super().__str__() + f"\nШтраф энергии:{self.energy_penalty}" + '\n' + self.get_skills_str()

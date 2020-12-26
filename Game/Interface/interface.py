@@ -33,6 +33,10 @@ class InterfaceManager:
                 print(error_message)
 
     def choose_one_from_list(self, lst, on_zero='отмена', short_str=False):
+        index = self.choose_one_index_from_list(lst, on_zero, short_str)
+        return lst[index]
+
+    def choose_one_index_from_list(self, lst, on_zero='отмена', short_str=False):
         while True:
             if on_zero:
                 print(f'0 - {on_zero}')
@@ -45,7 +49,7 @@ class InterfaceManager:
             if number == 0 and on_zero:
                 return None
             if 0 < number <= len(lst):
-                return lst[number-1]
+                return number-1
             else:
                 print('Ошибка с введенным числом')
 

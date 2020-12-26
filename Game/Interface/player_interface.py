@@ -1,5 +1,6 @@
 from .interface import InterfaceManager
 from . import colors
+from Game.Locations.dijkstra import SuperDijkstra
 
 interface = InterfaceManager.instance()
 
@@ -68,24 +69,60 @@ class PlayerInterface:
     def menu_in_place(self):
         while True:
             interface.start_menu()
-            print(f'---= Вы находитесь в {self.player.place} =---')
+            print(f'---= Вы находитесь в {self.player.place} =---\n{self.base_player_info()}')
             print('i - инвентарь')
-            print('l - переместиться')
+            print('m - переместиться')
+            print('h - взаимодействие с персонажами')
+            print('t - мои задания')
+
             choice = input('Ваш выбор: ')
             if choice == 'i':
                 pass
-            elif choice == 'l':
+            elif choice == 'm':
                 self.move_menu()
+            elif choice == 'h':
+                pass
+            elif choice == 't':
+                pass
             else:
                 print('Не пойдет :(')
+
+    def get_adjacent_places_str_list(self, places):
+        """
+        return: list of str
+        Every str is place short str but with (*) on target place.
+        """
+        check = False
+        if self.player.target_place:
+            dijkstra = SuperDijkstra.get_instance()
+            way = dijkstra.find_shortest_way(self.player.place, self.player.target_place)
+            next_place = way.places_list[1]
+            check = True
+
+        return list(map(
+            lambda place: str(place) + (f' {colors.CYELLOW}*{colors.CEND}' if check and place == next_place else ''),
+            places
+        ))
 
     def move_menu(self):
         interface.start_menu()
         print('-----= Перемещение =-----')
+
         interface.print_msg(f'Вы находитесь тут: {self.player.place}')
-        place = interface.choose_one_from_list(self.player.place.adjacent_places_list)
-        if place is None:
+        places = self.player.place.adjacent_places_list
+        l = self.get_adjacent_places_str_list(places)
+        index = interface.choose_one_index_from_list(l)
+        if index is None:
             return
+        place = places[index]
 
         self.player.move_to_place(place)
         return
+
+    def base_player_info(self):
+        player = self.player
+        text = f"Герой {player.name}\n" \
+               f"hp: {player.hp}/{player.max_hp}\n"
+        if player.main_task:
+            text += f"Задание: {player.main_task.short_str}"
+        return text

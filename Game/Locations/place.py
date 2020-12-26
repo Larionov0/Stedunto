@@ -58,6 +58,19 @@ class Place:
         Place.all_places.append(self)
 
     @classmethod
+    def get_place_by_name(cls, name):
+        result_place = False
+        for place in cls.all_places:
+            if place.name == name:
+                if result_place:
+                    raise Exception(f'Повторяются места с названием: {place.name}')
+                else:
+                    result_place = place
+        if result_place:
+            return result_place
+        raise Exception(f'Не нашлось локации с названием {name}')
+
+    @classmethod
     def find_max_id(cls):
         m = 0
         for place in cls.all_places:
@@ -85,6 +98,9 @@ class Place:
     def remove_hero(self, hero):
         self.heroes.remove(hero)
         hero.place = None
+
+    def __eq__(self, other):
+        return self.id == other.id
 
     def __repr__(self):
         return f"{self.name} ({self.location.name})"

@@ -21,7 +21,7 @@ class Way:
         place_node.prev = self.last_place_node
         return Way(place_node)
 
-    def transform_to_list(self):
+    def _transform_to_list(self):
         lst = []
         node = self.last_place_node
         while node is not None:
@@ -32,7 +32,7 @@ class Way:
     @property
     def places_list(self):
         if not self._places_list:
-            self._places_list = self.transform_to_list()
+            self._places_list = self._transform_to_list()
         return self._places_list
 
 
@@ -71,12 +71,12 @@ class SuperDijkstra:
         while not place2.approved:
             self.bubbles.remove(approved_bubble)
             approved_place = approved_bubble.way.last_place_node.place
-            for place, distance in approved_place.adjacent_places_and_distances:
+            for place in approved_place.adjacent_places:
                 if not place.approved:
-                    new_bubble = approved_bubble.create_extension(place, distance)
-                    self.aggressive_append_to_bubbles(new_bubble)
+                    new_bubble = approved_bubble.create_extension(place, 1)
+                    self._aggressive_append_to_bubbles(new_bubble)
 
-            min_bubble = self.find_min_bubble()
+            min_bubble = self._find_min_bubble()
             min_bubble.way.last_place_node.place.approved = True
             approved_bubble = min_bubble
 
@@ -84,7 +84,7 @@ class SuperDijkstra:
             if bubble.way.last_place_node.place is place2:
                 return bubble.way
 
-    def aggressive_append_to_bubbles(self, new_bubble: DijkstraBubble):
+    def _aggressive_append_to_bubbles(self, new_bubble: DijkstraBubble):
         i = len(self.bubbles) - 1
         result = False
         while i >= 0:
@@ -100,7 +100,7 @@ class SuperDijkstra:
         if not result:
             self.bubbles.append(new_bubble)
 
-    def find_min_bubble(self):
+    def _find_min_bubble(self):
         min_distance = float('inf')
         min_bubble = None
         for bubble in self.bubbles:
