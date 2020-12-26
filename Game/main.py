@@ -27,9 +27,16 @@ task.add_subtask(
     TravelToPlaceSubTask(task, 'Доберись до аудиторной', Place.get_place_by_name('Аудиторная'))
 )
 task.add_subtask(
-    TravelToPlaceSubTask(task, 'Доберись до Опушки', Place.get_place_by_name('Опушка'))
+    TravelToPlaceSubTask(task, 'Доберись до Зарослей', Place.get_place_by_name('Заросли'))
 )
+
+task2 = Task('Отгулка', player1, [], None)
+task2.add_subtask(
+    TravelToPlaceSubTask(task2, 'Идем к Опушке', Place.get_place_by_name('Опушка'))
+)
+
 player1.add_task(task)
+player1.add_task(task2)
 player1.set_main_task(task)
 
 player1.player_interface.menu_in_place()

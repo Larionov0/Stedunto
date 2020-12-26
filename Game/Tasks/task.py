@@ -7,7 +7,7 @@ interface = InterfaceManager.instance()
 
 
 class Task:
-    def __init__(self, name, player, subtasks, reward, description=''):
+    def __init__(self, name, player, subtasks, reward, description='', is_main=False):
         self.player = player
         self.name = name
         self.subtasks: List[SubTask] = subtasks
@@ -15,6 +15,7 @@ class Task:
         self.description = description
         self.cur_subtask_index = 0
         self.is_done = False
+        self.is_main = is_main
 
     def start(self):
         self.cur_subtask.on_start()
@@ -56,6 +57,8 @@ class Task:
 
     @property
     def short_str(self):
+        if self.cur_subtask_index == self.subtasks_count:
+            return self.name + ' (done)'
         return f"{self.name} (выполняется {self.subtasks[self.cur_subtask_index].short_description})"
 
     def __str__(self):

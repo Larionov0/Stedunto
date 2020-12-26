@@ -45,6 +45,18 @@ class Player(Hero):
         self.main_task = task
         self.main_task.start()
 
+    @property
+    def alive_tasks(self):
+        return list(filter(lambda task: not task.is_done, self.tasks))
+
+    @property
+    def main_tasks(self):
+        return list(filter(lambda task: task.is_main, self.alive_tasks))
+
+    @property
+    def secondary_tasks(self):
+        return list(filter(lambda task: not task.is_main, self.alive_tasks))
+
     def what_to_do_menu(self):
         self.player_interface.what_to_do_menu()
 
@@ -97,11 +109,15 @@ class Player(Hero):
         place.add_hero(self)
         interface.print_msg(f'{colors.CGREEN}{self.name} переместился в {place}{colors.CEND}')
 
-        self.main_task_check(globals.TRAVELLED_TO_PLACE_SIGNAL, place=place)
+        self.check_all_tasks(globals.TRAVELLED_TO_PLACE_SIGNAL, place=place)
 
     def main_task_check(self, signal, *args, **kwargs):
         if self.main_task:
             self.main_task.check(signal, *args, **kwargs)
+
+    def check_all_tasks(self, signal, *args, **kwargs):
+        for task in self.alive_tasks:
+            task.check(signal, *args, **kwargs)
 
     def __str__(self):
         return super().__str__() + f"\nШтраф энергии:{self.energy_penalty}" + '\n' + self.get_skills_str()
