@@ -42,7 +42,8 @@ class Task:
         interface.print_msg(f'{colors.CYELLOW}Задание {self.name} выполнено!!!{colors.CEND}')
         self.give_reward()
         self.is_done = True
-        self.player.main_task = None
+        if self.player.main_task is self:
+            self.player.main_task = None
 
     def give_reward(self):
         interface.print_msg('Ваша награда:')

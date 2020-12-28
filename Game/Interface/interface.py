@@ -1,5 +1,6 @@
 import random
 from os import system
+import msvcrt
 
 
 class InterfaceManager:
@@ -12,6 +13,10 @@ class InterfaceManager:
         InterfaceManager._instance = self
         self.messages = []
         self.new_messages = False
+
+    def press(self, text):
+        print(text)
+        return msvcrt.getch().decode()
 
     @classmethod
     def instance(cls):

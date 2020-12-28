@@ -22,7 +22,7 @@ class PlayerInterface:
                    f"i - вывести всех героев ({colors.CBLUE}{c1}{colors.CEND} - {colors.CRED}{c2}{colors.CEND})\n" \
                    f"m - просмотреть последние сообщения\n" \
                    f"Ваш выбор: "
-            choice = input(text)
+            choice = interface.press(text)
 
             if choice == 'n':
                 return
@@ -70,12 +70,13 @@ class PlayerInterface:
         while True:
             interface.start_menu()
             print(f'---= Вы находитесь в {self.player.place} =---\n{self.base_player_info()}')
+            print(self.player.target_place)
             print('i - инвентарь')
             print('m - переместиться')
             print('h - взаимодействие с персонажами')
             print('t - мои задания')
 
-            choice = input('Ваш выбор: ')
+            choice = interface.press('Ваш выбор: ')
             if choice == 'i':
                 pass
             elif choice == 'm':
@@ -105,11 +106,12 @@ class PlayerInterface:
             text = '---= Мои Задания =---\n' \
                    f'Основные: \n{self.tasks_str(self.player.main_tasks)}\n' \
                    f'Дополнительные:\n{self.tasks_str(self.player.secondary_tasks)}\n'
-            text += '0 - назад\n' \
+            text += '\nВыберите раздел:\n' \
+                    '0 - назад\n' \
                     '1 - основные\n' \
                     '2 - дополнительные'
             print(text)
-            choice = input('Ваш выбор: ')
+            choice = interface.press('Ваш выбор: ')
             if choice == '1':
                 self.my_concrete_tasks_menu(True)
             elif choice == '2':
@@ -145,7 +147,7 @@ class PlayerInterface:
                    f'1 - назначить сие задание главным\n' \
                    f'2 - считерить сие задание\n'
             print(text)
-            choice = input('Ваш выбор: ')
+            choice = interface.press('Ваш выбор: ')
             if choice == '1':
                 self.player.set_main_task(task)
                 interface.print_msg('Задание очень успешно назначено')

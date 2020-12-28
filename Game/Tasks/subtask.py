@@ -60,7 +60,8 @@ class TravelToPlaceSubTask(SubTask):
         self.player.target_place = self.place
 
     def on_stop(self):
-        self.player.target_place = None
+        if self.player.main_task is self.task:
+            self.player.target_place = None
 
 
 class EnemyBeatenSubTask(SubTask):
