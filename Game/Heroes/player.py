@@ -18,6 +18,7 @@ class Player(Hero):
     strength = 10
     energy = max_energy = 10
     magic = 0
+    coins = 10
 
     _standard_team_number = 1
 
@@ -34,6 +35,18 @@ class Player(Hero):
 
         self.tasks: List[Task] = []
         self.main_task: Optional[Task] = None
+
+    def add_coins(self, coins):
+        self.coins += coins
+        interface.print_msg(f"{colors.CYELLOW}{self.name} получил {coins} монет!{colors.CEND}")
+
+    def take_coins(self, coins):
+        pass
+
+    def add_skill(self, skill):
+        if skill not in self.skills:
+            self.skills.append(skill)
+            interface.print_msg(f'{self.colored_name} получил карту умения!!!\n{skill}')
 
     def add_task(self, task):
         self.tasks.append(task)
@@ -103,6 +116,10 @@ class Player(Hero):
         super().before_battle(enemy)
         for _ in range(4):
             self.pick_up_cards()
+
+    def win_battle(self, enemy):
+        enemy.reward.give_to_player(self)
+        self.check_all_tasks(globals.HERO_BEATEN_SIGNAL, hero=enemy)
 
     def move_to_place(self, place):
         self.place.remove_hero(self)

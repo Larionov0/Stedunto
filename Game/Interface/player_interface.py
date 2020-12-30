@@ -5,6 +5,7 @@ from .Sections.tasks_section import TasksInterface
 from .Sections.battle_section import BattleInterface
 from .interface_interface import Interface
 from Game.Actions.battle import HeroBattle
+from Game.globals import *
 
 interface = InterfaceManager.instance()
 
@@ -58,22 +59,22 @@ class PlayerInterface(Interface):
             {
                 'b': ['начать бой', lambda: self.start_battle(hero)],
                 't': ['поговорить', lambda: self.start_talking(hero)]
-            }
+            },
+            return_back=False
         )
 
     def start_battle(self, enemy):
         winner = HeroBattle.heroes_starts_battle(self.player, enemy)
         if winner is self.player:
-            self.win_battle(enemy)
+            self.player.win_battle(enemy)
         else:
             interface.print_msg('Вы погибли:(')
             interface.enter()
 
-    def win_battle(self, enemy):
-        reward = enemy.reward
-
     def start_talking(self, hero):
-        pass
+        interface.print_msg(f"{hero.colored_name}: Нахуй ты со мной говоришь, я персонаж массовки.\n"
+                            f"А теперь отойди, и не мешай этому элементу интерьера втыкать в одну точку.\n"
+                            f"Так надо.")
 
     def get_adjacent_places_str_list(self, places):
         """
@@ -112,7 +113,8 @@ class PlayerInterface(Interface):
     def base_player_info(self):
         player = self.player
         text = f"Герой {player.name}\n" \
-               f"hp: {player.hp}/{player.max_hp}\n"
+               f"hp: {player.hp}/{player.max_hp}\n" \
+               f"Монеты: {player.coins}\n"
         if player.main_task:
             text += f"Задание: {player.main_task.short_str}"
         return text

@@ -3,6 +3,7 @@ from .Dop import effects, states
 from ..Interface.interface import InterfaceManager
 from ..Interface import colors
 from ..Locations.place import Place
+from Game.rewards import Reward
 
 
 interface = InterfaceManager.instance()
@@ -151,6 +152,8 @@ class Hero:
 
     def die(self):
         self.alive = False
+        if self.place:
+            self.place.remove_hero(self)
         interface.print_msg(f"{self.colored_name} погиб (ла)")
 
     def what_to_do_menu(self):
@@ -220,9 +223,7 @@ class Hero:
 
 class Mob(Hero):
     is_user_control = False
-    reward = {
-
-    }
+    reward = Reward()
 
     def what_to_do(self):
         pass

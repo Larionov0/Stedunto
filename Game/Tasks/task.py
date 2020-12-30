@@ -46,7 +46,9 @@ class Task:
             self.player.main_task = None
 
     def give_reward(self):
-        interface.print_msg('Ваша награда:')
+        interface.print_msg(f'{colors.CYELLOW}Вам положена награда:{colors.CEND}')
+        if self.reward:
+            self.reward.give_to_player(self.player)
 
     def check(self, signal, *args, **kwargs):
         if signal in self.cur_subtask.signals:

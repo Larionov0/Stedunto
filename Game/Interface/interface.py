@@ -95,7 +95,7 @@ class InterfaceManager:
     def clear(self):
         system('cls')
 
-    def menu(self, header, text, variants_dict, input_text='Ваш выбор:', on_zero='назад'):
+    def menu(self, header, text, variants_dict, input_text='Ваш выбор:', on_zero='назад', return_back=True):
         """
         variants_dict:
         {
@@ -116,3 +116,5 @@ class InterfaceManager:
                 return
             if choice in variants_dict:
                 variants_dict[choice][1]()
+                if return_back is False:
+                    return
