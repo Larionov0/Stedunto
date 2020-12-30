@@ -1,76 +1,27 @@
 from .interface import InterfaceManager
 from . import colors
 from Game.Locations.dijkstra import SuperDijkstra
+from .Sections.tasks_section import TasksInterface
+from .Sections.battle_section import BattleInterface
+from .interface_interface import Interface
+from Game.Actions.battle import HeroBattle
 
 interface = InterfaceManager.instance()
 
 
-class PlayerInterface:
+class PlayerInterface(Interface):
     def __init__(self, player):
-        self.player = player
+        super().__init__(player)
+        self.tasks_interface = TasksInterface(self.player)
+        self.battle_interface = BattleInterface(self.player)
 
     def what_to_do_menu(self):
-        while True:
-            interface.start_menu()
-            c1 = len(self.player.alive_team)
-            c2 = len(self.player.enemy.alive_team)
-            text = f"{colors.CBLUE}---= Меню действий героя =---{colors.CEND}\n" \
-                   f"{self.player}\n" \
-                   f"Ваши действия:\n" \
-                   f"n - закончить ход\n" \
-                   f"s - использовать умение\n" \
-                   f"i - вывести всех героев ({colors.CBLUE}{c1}{colors.CEND} - {colors.CRED}{c2}{colors.CEND})\n" \
-                   f"m - просмотреть последние сообщения\n" \
-                   f"Ваш выбор: "
-            choice = interface.press(text)
+        return self.battle_interface.what_to_do_menu()
 
-            if choice == 'n':
-                return
-            elif choice == 's':
-                self.choose_skill_menu()
-            elif choice == 'i':
-                self.print_info()
-            elif choice == 'm':
-                interface.show_messages()
-            else:
-                print('Не, не пойдет')
-
-    def print_info(self):
-        print(f'\n\n')
-        print('Герои:')
-        for hero in self.player.alive_team + self.player.enemy.alive_team:
-            interface.print_line()
-            print(hero)
-        interface.print_line()
-
-    def choose_skill_menu(self):
-        print('Выберите умение:')
-        skill_card = interface.choose_one_from_list(self.player.arm)
-        if skill_card is None:
-            return
-        self.cast_skill_menu(skill_card)
-
-    def cast_skill_menu(self, skill):
-        interface.print_line()
-        print(f"Вы выбрали умение: {skill}")
-        print(skill.description)
-        needed_energy = skill.energy + self.player.energy_penalty
-        if self.player.energy < needed_energy:
-            print(f"Ты не можешь кастонуть эту дичь из-за энергии ({self.player.energy}/{needed_energy})")
-            return
-
-        ans = input('Кастуем? (y/n): ')
-        if ans == 'y':
-            skill.cast(self.player, self.player.enemy)
-        else:
-            return
-
-    # ---- locations
     def menu_in_place(self):
         while True:
             interface.start_menu()
             print(f'---= Вы находитесь в {self.player.place} =---\n{self.base_player_info()}')
-            print(self.player.target_place)
             print('i - инвентарь')
             print('m - переместиться')
             print('h - взаимодействие с персонажами')
@@ -82,79 +33,47 @@ class PlayerInterface:
             elif choice == 'm':
                 self.move_menu()
             elif choice == 'h':
-                pass
+                self.interaction_with_heroes()
             elif choice == 't':
-                self.my_tasks_menu()
+                self.tasks_interface.my_tasks_menu()
             else:
                 print('Не пойдет :(')
 
-    def tasks_str(self, tasks):
-        text = ''
-        for task_str in self.tasks_list_str(tasks):
-            text += f"- {task_str}\n"
-        return text
-
-    def tasks_list_str(self, tasks):
-        return list(map(
-            lambda task: f"{task.short_str + (f'{colors.CYELLOW}(*){colors.CEND}' if task == self.player.main_task else '')}",
-            tasks
-        ))
-
-    def my_tasks_menu(self):
+    def interaction_with_heroes(self):
         while True:
             interface.start_menu()
-            text = '---= Мои Задания =---\n' \
-                   f'Основные: \n{self.tasks_str(self.player.main_tasks)}\n' \
-                   f'Дополнительные:\n{self.tasks_str(self.player.secondary_tasks)}\n'
-            text += '\nВыберите раздел:\n' \
-                    '0 - назад\n' \
-                    '1 - основные\n' \
-                    '2 - дополнительные'
+            text = '----= Взаимодействие с персонажами =----\n' \
+                   'Выберите персонажа для взаимодействия:'
             print(text)
-            choice = interface.press('Ваш выбор: ')
-            if choice == '1':
-                self.my_concrete_tasks_menu(True)
-            elif choice == '2':
-                self.my_concrete_tasks_menu(False)
-            elif choice == '0':
+            heroes = list(filter(lambda hero: hero is not self.player, self.player.place.heroes))
+            hero = interface.choose_one_from_list(heroes, short_str=True)
+            if hero is None:
                 return
+            return self.what_to_do_with_hero(hero)
 
-    def my_concrete_tasks_menu(self, is_main):
-        if is_main:
-            tasks = self.player.main_tasks
+    def what_to_do_with_hero(self, hero):
+        interface.menu(
+            f'Взаимодействие с персонажем {hero.name}',
+            f'{hero}\nКак взаимодействуем:',
+            {
+                'b': ['начать бой', lambda: self.start_battle(hero)],
+                't': ['поговорить', lambda: self.start_talking(hero)]
+            }
+        )
+
+    def start_battle(self, enemy):
+        winner = HeroBattle.heroes_starts_battle(self.player, enemy)
+        if winner is self.player:
+            self.win_battle(enemy)
         else:
-            tasks = self.player.secondary_tasks
+            interface.print_msg('Вы погибли:(')
+            interface.enter()
 
-        while True:
-            interface.start_menu()
-            if is_main:
-                print('---= Основные задания =---')
-            else:
-                print('---= Второстепенные задания =---')
+    def win_battle(self, enemy):
+        reward = enemy.reward
 
-            index = interface.choose_one_index_from_list(self.tasks_list_str(tasks))
-            if index is None:
-                return
-            task = tasks[index]
-            self.task_menu(task)
-
-    def task_menu(self, task):
-        while True:
-            interface.start_menu()
-            text = '---= Меню задания =---\n' \
-                   f'Выбрано задание:\n{task}\n' \
-                   f'0 - назад\n' \
-                   f'1 - назначить сие задание главным\n' \
-                   f'2 - считерить сие задание\n'
-            print(text)
-            choice = interface.press('Ваш выбор: ')
-            if choice == '1':
-                self.player.set_main_task(task)
-                interface.print_msg('Задание очень успешно назначено')
-            elif choice == '2':
-                interface.print_msg('Я те щяс как считерю. Играй давай нормально.')
-            elif choice == '0':
-                return
+    def start_talking(self, hero):
+        pass
 
     def get_adjacent_places_str_list(self, places):
         """

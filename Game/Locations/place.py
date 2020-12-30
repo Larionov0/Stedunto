@@ -1,3 +1,6 @@
+from Game.Interface import colors
+
+
 class Connection:
     def __init__(self, places=None):
         if places is None:
@@ -59,7 +62,7 @@ class Place:
 
     @classmethod
     def get_place_by_name(cls, name):
-        result_place = False
+        result_place: Place = None
         for place in cls.all_places:
             if place.name == name:
                 if result_place:
@@ -103,4 +106,4 @@ class Place:
         return self.id == other.id
 
     def __repr__(self):
-        return f"{self.name} ({self.location.name})"
+        return f"{colors.CGREEN}{self.name}{colors.CEND} ({self.location.name})"

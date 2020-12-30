@@ -1,4 +1,7 @@
 from ..Heroes.hero import Hero
+from ..Interface.interface import InterfaceManager
+
+interface = InterfaceManager.instance()
 
 
 class HeroBattle:
@@ -18,8 +21,8 @@ class HeroBattle:
             if len(hero1.alive_team + hero2.alive_team) == 0:
                 return 0
             elif not hero1.is_team_alive:
-                print(f"{hero2.colored_name} победил!")
+                interface.print_msg(f"{hero2.colored_name} победил!")
                 return hero2
             elif not hero2.is_team_alive:
-                print(f"{hero1.colored_name} победил!")
+                interface.print_msg(f"{hero1.colored_name} победил!")
                 return hero1

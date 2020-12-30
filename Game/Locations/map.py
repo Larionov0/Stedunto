@@ -1,5 +1,6 @@
 from .place import Place, Connection
 from .location import Location
+from Game.Heroes.Heroes.goblin import Goblin
 
 
 def build_map():
@@ -41,5 +42,10 @@ def build_map():
 
     for row in connections:
         Connection.create_and_connect(places_dict[row[0]], places_dict[row[1]])
+
+    zarosly = Place.get_place_by_name('Заросли')
+    zarosly.heroes.append(
+        Goblin()
+    )
 
     return places

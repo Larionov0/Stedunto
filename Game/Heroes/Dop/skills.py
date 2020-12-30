@@ -45,10 +45,9 @@ class SimpleKick(SkillCard):
     description = f'Вы наносите выбранному врагу <strength> урона'
 
     def cast(self, player, enemy):
-        number = interface.choose_one_from_list(enemy.alive_team, short_str=True)
-        if number == 0:
+        hero = interface.choose_one_from_list(enemy.alive_team, short_str=True)
+        if hero == 0:
             return False
-        hero = enemy.alive_team[number - 1]
         interface.print_line()
         interface.print_msg(f"{player.name} наносит простой ударчик по {hero.name}...")
         hero.get_damage(player.strength)

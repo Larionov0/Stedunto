@@ -78,3 +78,10 @@ class EnemyBeatenSubTask(SubTask):
     def hero_beaten_check(self, hero):
         if hero == self.hero:
             self.done()
+
+    def on_start(self):
+        self.player.target_place = self.hero.place
+
+    def on_stop(self):
+        if self.player.main_task is self.task:
+            self.player.target_place = None

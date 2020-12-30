@@ -16,7 +16,10 @@ class InterfaceManager:
 
     def press(self, text):
         print(text)
-        return msvcrt.getch().decode()
+        try:
+            return msvcrt.getch().decode()
+        except:
+            return ''
 
     @classmethod
     def instance(cls):
@@ -39,6 +42,8 @@ class InterfaceManager:
 
     def choose_one_from_list(self, lst, on_zero='отмена', short_str=False):
         index = self.choose_one_index_from_list(lst, on_zero, short_str)
+        if index is None:
+            return None
         return lst[index]
 
     def choose_one_index_from_list(self, lst, on_zero='отмена', short_str=False):
@@ -89,3 +94,25 @@ class InterfaceManager:
 
     def clear(self):
         system('cls')
+
+    def menu(self, header, text, variants_dict, input_text='Ваш выбор:', on_zero='назад'):
+        """
+        variants_dict:
+        {
+            'a': ['атаковать', lambda : self.attack_menu(enemy)],
+            'b': ['защищаться', self.def_menu]
+        }
+        """
+        while True:
+            self.start_menu()
+            print(f'----= {header} =-----')
+            print(text)
+            if on_zero:
+                print(f'0 - {on_zero}')
+            for variant in variants_dict:
+                print(f'{variant} - {variants_dict[variant][0]}')
+            choice = self.press(input_text)
+            if on_zero and choice == '0':
+                return
+            if choice in variants_dict:
+                variants_dict[choice][1]()

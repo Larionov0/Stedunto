@@ -140,7 +140,6 @@ class Hero:
         if remaining_damage > 0:
             self.loose_hp(remaining_damage)
 
-
     def loose_hp(self, hp):
         self.hp -= hp
         interface.print_msg(f"{self.colored_name} потерял {hp} hp. Теперь у него {self.hp}/{self.max_hp} hp")
@@ -202,7 +201,8 @@ class Hero:
 
     def __str__(self):
         return f"{self.colored_name}  ({self.hp}/{self.max_hp})\n" \
-               f"strength={self.strength} | mind={self.mind} | armor={self.armor} | magic={self.magic} | energy={self.energy}/{self.max_energy} | rage={self.rage}/{self.max_rage}\n" \
+               f"| сила={self.strength} | интеллект={self.mind} | магия={self.magic} |\n" \
+               f"| броня={self.armor} | энергия={self.energy}/{self.max_energy} | ярость={self.rage}/{self.max_rage}\n" \
                f"{self.get_states_and_effects_str()}"
 
     def get_states_and_effects_str(self):
@@ -220,6 +220,9 @@ class Hero:
 
 class Mob(Hero):
     is_user_control = False
+    reward = {
+
+    }
 
     def what_to_do(self):
         pass
