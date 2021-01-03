@@ -1,51 +1,9 @@
-from .Heroes import player
-from .Heroes.Dop import skills
-from .Actions.battle import HeroBattle
-from .Actions.Battles.with_chert import battle
-from .Locations.map import build_map, Place
-from .rewards import Reward
 from os import system
-from .Tasks.task import Task
-from .Tasks.subtask import *
+from .world import World
 
 
 system('cls')
 
-map_ = build_map()
-
-player1 = player.Player()
-map_[0].add_hero(player1)
-player1.skills = list(map(lambda s_class: s_class(), skills.classes))
-
-data = {
-    'map': map_,
-    'player': player1
-}
-
-
-task = Task('Прогулка', player1, [], Reward(coins=10))
-task.add_subtask(
-    TravelToPlaceSubTask(task, 'Доберись до аудиторной', Place.get_place_by_name('Аудиторная'))
-)
-task.add_subtask(
-    TravelToPlaceSubTask(task, 'Доберись до Зарослей', Place.get_place_by_name('Заросли'))
-)
-
-task2 = Task('Отгулка', player1, [], None)
-task2.add_subtask(
-    TravelToPlaceSubTask(task2, 'Идем к Опушке', Place.get_place_by_name('Опушка'))
-)
-
-task3 = Task('Первая кровь', player1, [], Reward(coins=20))
-task3.add_subtask(
-    EnemyBeatenSubTask(task3, 'Убей гоблина', Place.get_place_by_name('Заросли').heroes[0])
-)
-
-player1.add_task(task)
-player1.add_task(task2)
-player1.add_task(task3)
-player1.set_main_task(task)
-
-player1.player_interface.menu_in_place()
+World().run()
 
 input()

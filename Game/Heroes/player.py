@@ -27,7 +27,7 @@ class Player(Hero):
 
     energy_penalty = 0
 
-    def __init__(self):
+    def __init__(self, world):
         super().__init__()
         self.skills: List[skills.SkillCard] = []
         self.arm: List[skills.SkillCard] = []
@@ -36,6 +36,8 @@ class Player(Hero):
 
         self.tasks: List[Task] = []
         self.main_task: Optional[Task] = None
+
+        self.world = world
 
     def add_coins(self, coins):
         self.coins += coins
