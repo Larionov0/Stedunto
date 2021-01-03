@@ -113,6 +113,7 @@ class Player(Hero):
         interface.enter()
 
     def before_battle(self, enemy):
+        interface.start_menu()
         super().before_battle(enemy)
         for _ in range(4):
             self.pick_up_cards()

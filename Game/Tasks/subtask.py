@@ -80,7 +80,9 @@ class EnemyBeatenSubTask(SubTask):
             self.done()
 
     def on_start(self):
+        input('on_start')
         self.player.target_place = self.hero.place
+        input(self.player.target_place)
 
     def on_stop(self):
         if self.player.main_task is self.task:

@@ -31,10 +31,12 @@ class InterfaceManager:
     def print_line(n=40):
         print('-'*n)
 
-    @staticmethod
-    def input_int(text, error_message='Не целое число'):
+    def input_int(self, text, error_message='Не целое число', press=False):
         while True:
-            ans = input(text)
+            if press:
+                ans = self.press(text)
+            else:
+                ans = input(text)
             if ans.isdigit():
                 return int(ans)
             else:
@@ -46,7 +48,7 @@ class InterfaceManager:
             return None
         return lst[index]
 
-    def choose_one_index_from_list(self, lst, on_zero='отмена', short_str=False):
+    def choose_one_index_from_list(self, lst, on_zero='отмена', short_str=False, auto_press=True):
         while True:
             if on_zero:
                 print(f'0 - {on_zero}')
@@ -55,7 +57,13 @@ class InterfaceManager:
                     print(f"{i + 1} - {el.short_str}")
                 else:
                     print(f"{i + 1} - {el}")
-            number = self.input_int('Ваш выбор: ')
+            if auto_press:
+                if len(lst) > 9:
+                    number = self.input_int('Ваш выбор: ')
+                else:
+                    number = self.input_int('Ваш выбор: ', press=True)
+            else:
+                number = self.input_int('Ваш выбор: ')
             if number == 0 and on_zero:
                 return None
             if 0 < number <= len(lst):

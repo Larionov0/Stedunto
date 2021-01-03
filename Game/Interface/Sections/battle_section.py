@@ -28,13 +28,13 @@ class BattleInterface(Interface):
             elif choice == 'i':
                 self.print_info()
             elif choice == 'm':
+                interface.start_menu()
                 interface.show_messages()
-                interface.enter()
             else:
                 print('Не, не пойдет')
 
     def print_info(self):
-        print(f'\n\n')
+        interface.start_menu()
         interface.print_msg('Герои:')
         for hero in self.player.alive_team + self.player.enemy.alive_team:
             interface.print_line()

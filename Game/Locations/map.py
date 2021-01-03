@@ -44,8 +44,6 @@ def build_map():
         Connection.create_and_connect(places_dict[row[0]], places_dict[row[1]])
 
     zarosly = Place.get_place_by_name('Заросли')
-    zarosly.heroes.append(
-        Goblin()
-    )
+    zarosly.add_hero(Goblin())
 
     return places

@@ -99,7 +99,7 @@ class PlayerInterface(Interface):
         interface.start_menu()
         print('-----= Перемещение =-----')
 
-        interface.print_msg(f'Вы находитесь тут: {self.player.place}')
+        print(f'Вы находитесь тут: {self.player.place}')
         places = self.player.place.adjacent_places_list
         l = self.get_adjacent_places_str_list(places)
         index = interface.choose_one_index_from_list(l)
