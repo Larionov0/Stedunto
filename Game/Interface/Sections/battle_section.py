@@ -22,6 +22,7 @@ class BattleInterface(Interface):
             choice = interface.press(text)
 
             if choice == 'n':
+                interface.start_menu()
                 return
             elif choice == 's':
                 self.choose_skill_menu()

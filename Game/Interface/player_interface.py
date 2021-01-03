@@ -4,8 +4,6 @@ from Game.Locations.dijkstra import SuperDijkstra
 from .Sections.tasks_section import TasksInterface
 from .Sections.battle_section import BattleInterface
 from .interface_interface import Interface
-from Game.Actions.battle import HeroBattle
-from Game.globals import *
 
 interface = InterfaceManager.instance()
 
@@ -57,19 +55,11 @@ class PlayerInterface(Interface):
             f'Взаимодействие с персонажем {hero.name}',
             f'{hero}\nКак взаимодействуем:',
             {
-                'b': ['начать бой', lambda: self.start_battle(hero)],
+                'b': ['начать бой', lambda: self.player.start_battle(hero)],
                 't': ['поговорить', lambda: self.start_talking(hero)]
             },
             return_back=False
         )
-
-    def start_battle(self, enemy):
-        winner = HeroBattle.heroes_starts_battle(self.player, enemy)
-        if winner is self.player:
-            self.player.win_battle(enemy)
-        else:
-            interface.print_msg('Вы погибли:(')
-            interface.enter()
 
     def start_talking(self, hero):
         interface.print_msg(f"{hero.colored_name}: Нахуй ты со мной говоришь, я персонаж массовки.\n"

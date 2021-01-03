@@ -1,4 +1,8 @@
 from Game.Interface import colors
+from Game.Interface.interface import InterfaceManager
+from Game.Heroes.hero import Mob, Team
+
+interface = InterfaceManager.instance()
 
 
 class Connection:
@@ -60,6 +64,10 @@ class Place:
         self.approved = False
         Place.all_places.append(self)
 
+    @property
+    def mobs(self):
+        return list(filter(lambda hero: isinstance(hero, Mob), self.heroes))
+
     @classmethod
     def get_place_by_name(cls, name):
         result_place: Place = None
@@ -101,6 +109,16 @@ class Place:
     def remove_hero(self, hero):
         self.heroes.remove(hero)
         hero.place = None
+
+    def player_came_here(self, player):
+        team = Team(2)
+        if not self.location.is_safe:
+            for mob in self.mobs:
+                if interface.check_chance(mob.aggression_chance):
+                    interface.print_msg(f'{mob.short_str} решил напасть на вас!')
+                    team.add_hero(mob)
+
+        return team
 
     def __eq__(self, other):
         return self.id == other.id

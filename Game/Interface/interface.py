@@ -85,7 +85,7 @@ class InterfaceManager:
             self.messages.pop()
 
     def show_messages(self):
-        print('\n--= Последние сообщения =--')
+        self.print_msg('\n--= Последние сообщения =--')
         for message in self.messages:
             print('- - - -')
             print(message)

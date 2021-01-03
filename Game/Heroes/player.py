@@ -6,6 +6,7 @@ from ..Interface.interface import InterfaceManager
 from ..Interface.player_interface import PlayerInterface
 from ..Tasks.task import Task
 from Game import globals
+from Game.Actions.battle import HeroBattle
 
 interface = InterfaceManager.instance()
 
@@ -114,13 +115,25 @@ class Player(Hero):
 
     def before_battle(self, enemy):
         interface.start_menu()
+        interface.print_msg('Начинается битва')
         super().before_battle(enemy)
         for _ in range(4):
             self.pick_up_cards()
 
+    def start_battle(self, enemy):
+        winner = HeroBattle.heroes_starts_battle(self, enemy)
+        if winner is self:
+            self.win_battle(enemy)
+        else:
+            interface.print_msg('Вы погибли:(')
+            interface.enter()
+
     def win_battle(self, enemy):
-        enemy.reward.give_to_player(self)
-        self.check_all_tasks(globals.HERO_BEATEN_SIGNAL, hero=enemy)
+        for enemy_ in enemy.team.heroes:
+            print(f'{colors.CYELLOW}Ваша награда за {enemy_.short_str}{colors.CEND}')
+            enemy_.reward.give_to_player(self)
+
+            self.check_all_tasks(globals.HERO_BEATEN_SIGNAL, hero=enemy_)
 
     def move_to_place(self, place):
         self.place.remove_hero(self)
@@ -128,6 +141,10 @@ class Player(Hero):
         interface.print_msg(f'{colors.CGREEN}{self.name} переместился в {place}{colors.CEND}')
 
         self.check_all_tasks(globals.TRAVELLED_TO_PLACE_SIGNAL, place=place)
+
+        aggressive_enemies_team = place.player_came_here(self)  # check if some mobs attacks player
+        if aggressive_enemies_team.heroes:
+            self.start_battle(aggressive_enemies_team.alive_heroes[0])
 
     def main_task_check(self, signal, *args, **kwargs):
         if self.main_task:

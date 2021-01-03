@@ -2,7 +2,6 @@ from typing import List
 from .Dop import effects, states
 from ..Interface.interface import InterfaceManager
 from ..Interface import colors
-from ..Locations.place import Place
 from Game.rewards import Reward
 
 
@@ -24,7 +23,7 @@ class Hero:
     max_rage = 100
 
     _standard_team_number = 2
-    place: Place = None
+    place = None
 
     sex = 'М'
     enemy = None
@@ -224,6 +223,7 @@ class Hero:
 class Mob(Hero):
     is_user_control = False
     reward = Reward()
+    aggression_chance = 100  # %
 
     def what_to_do(self):
         pass
@@ -236,10 +236,11 @@ class Boss(Mob):
 class Team:
     def __init__(self, number, heroes=None):
         self.number = number
-        self.heroes: List[Hero] = heroes
+        self.heroes: List[Hero] = heroes if heroes else []
 
     def add_hero(self, hero):
         self.heroes.append(hero)
+        hero.team = self
 
     @property
     def alive_heroes(self):

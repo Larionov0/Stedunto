@@ -14,9 +14,11 @@ class HeroBattle:
 
         while True:
             for hero in hero1.alive_team:
-                hero.make_move()
+                if len(hero2.alive_team) != 0:
+                    hero.make_move()
             for hero in hero2.alive_team:
-                hero.make_move()
+                if len(hero1.alive_team) != 0:
+                    hero.make_move()
 
             if len(hero1.alive_team + hero2.alive_team) == 0:
                 return 0

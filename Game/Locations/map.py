@@ -46,4 +46,9 @@ def build_map():
     zarosly = Place.get_place_by_name('Заросли')
     zarosly.add_hero(Goblin())
 
+    for _ in range(3):
+        Place.get_place_by_name('Лесок').add_hero(
+            Goblin()
+        )
+
     return places
