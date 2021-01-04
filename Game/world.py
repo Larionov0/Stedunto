@@ -10,18 +10,18 @@ class World:
         map_ = build_map()
 
         player_ = player.Player(self)
-        map_[0].add_hero(player_)
+        map_.places[0].add_hero(player_)
         player_.skills = list(map(lambda s_class: s_class(), skills.classes))
         self.data = {
             'map': map_,
             'player': player_
         }
 
-        start_tasks.travelling_creator(player_)
-        start_tasks.first_blood_creator(player_)
-        
         self.stage = 1
-    
+
+        start_tasks.travelling_creator(self)
+        start_tasks.first_blood_creator(self)
+
     @property
     def player(self):
         return self.data['player']

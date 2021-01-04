@@ -25,7 +25,13 @@ class SubTask:
         interface.print_msg(f'{clr.CYELLOW}Подзадание выполнено! ({self.short_description}){clr.CEND}')
         self.is_done = True
         self.on_stop()
+        if self.function:
+            self.function(self.world)
         self.task.subtask_done()
+    
+    @property
+    def world(self):
+        return self.task.world
 
     @property
     def player(self):

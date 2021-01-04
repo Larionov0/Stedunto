@@ -3,6 +3,15 @@ from .location import Location
 from Game.Heroes.Heroes.goblin import Goblin
 
 
+class Map:
+    def __init__(self, places, locations):
+        self.locations = locations
+        self.places = places
+
+    def get_place_by_name(self, name):
+        return Place.get_place_by_name(name)
+
+
 def build_map():
     locations_list = [
         Location('Статический лес'),
@@ -51,4 +60,5 @@ def build_map():
             Goblin()
         )
 
-    return places
+    map_ = Map(places, locations_list)
+    return map_

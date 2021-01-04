@@ -7,7 +7,7 @@ interface = InterfaceManager.instance()
 
 
 class Task:
-    def __init__(self, name, player, subtasks, reward, description='', is_main=False):
+    def __init__(self, name, player, subtasks, reward, description='', is_main=False, function=None):
         self.player = player
         self.name = name
         self.subtasks: List[SubTask] = subtasks
@@ -16,6 +16,11 @@ class Task:
         self.cur_subtask_index = 0
         self.is_done = False
         self.is_main = is_main
+        self.function = function
+
+    @property
+    def world(self):
+        return self.player.world
 
     def start(self):
         self.cur_subtask.on_start()
@@ -44,6 +49,8 @@ class Task:
         self.is_done = True
         if self.player.main_task is self:
             self.player.main_task = None
+        if self.function:
+            self.function(self.world)
 
     def give_reward(self):
         interface.print_msg(f'{colors.CYELLOW}Вам положена награда:{colors.CEND}')

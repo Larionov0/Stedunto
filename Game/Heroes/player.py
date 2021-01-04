@@ -119,8 +119,12 @@ class Player(Hero):
         interface.start_menu()
         interface.print_msg('Начинается битва')
         super().before_battle(enemy)
+        self.clear_hand()
         for _ in range(4):
             self.pick_up_cards()
+
+    def clear_hand(self):
+        self.skills.clear()
 
     def start_battle(self, enemy):
         winner = HeroBattle.heroes_starts_battle(self, enemy)
