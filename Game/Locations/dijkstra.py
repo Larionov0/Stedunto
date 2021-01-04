@@ -59,8 +59,8 @@ class SuperDijkstra:
             return cls.instance
         return cls()
 
-    def find_shortest_way(self, place1: Place, place2: Place):
-        for place in Place.all_places:
+    def find_shortest_way(self, map_, place1: Place, place2: Place):
+        for place in map_.places:
             place.approved = False
 
         bubble = DijkstraBubble(Way(PlaceNode(place1)), 0)

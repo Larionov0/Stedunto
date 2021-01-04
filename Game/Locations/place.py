@@ -69,9 +69,9 @@ class Place:
         return list(filter(lambda hero: isinstance(hero, Mob), self.heroes))
 
     @classmethod
-    def get_place_by_name(cls, name):
+    def get_place_by_name(cls, places, name):
         result_place: Place = None
-        for place in cls.all_places:
+        for place in places:
             if place.name == name:
                 if result_place:
                     raise Exception(f'Повторяются места с названием: {place.name}')

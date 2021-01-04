@@ -124,7 +124,7 @@ class Player(Hero):
             self.pick_up_cards()
 
     def clear_hand(self):
-        self.skills.clear()
+        self.arm.clear()
 
     def start_battle(self, enemy):
         winner = HeroBattle.heroes_starts_battle(self, enemy)

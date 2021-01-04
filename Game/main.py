@@ -4,6 +4,10 @@ from .world import World
 
 system('cls')
 
-World().run()
+saving = input('Загрузить? (y/n)')
+if saving == 'y':
+    World.load().run()
+else:
+    World().run()
 
 input()

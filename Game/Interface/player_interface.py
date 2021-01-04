@@ -25,6 +25,7 @@ class PlayerInterface(Interface):
             print('m - переместиться')
             print('h - взаимодействие с персонажами')
             print('t - мои задания')
+            print('s - сохранить')
 
             choice = interface.press('Ваш выбор: ')
             if choice == 'i':
@@ -35,6 +36,9 @@ class PlayerInterface(Interface):
                 self.interaction_with_heroes()
             elif choice == 't':
                 self.tasks_interface.my_tasks_menu()
+            elif choice == 's':
+                self.player.world.save()
+                interface.print_msg('Мир сохранен успешно')
             else:
                 print('Не пойдет :(')
 
@@ -74,7 +78,7 @@ class PlayerInterface(Interface):
         check = False
         if self.player.target_place:
             dijkstra = SuperDijkstra.get_instance()
-            way = dijkstra.find_shortest_way(self.player.place, self.player.target_place)
+            way = dijkstra.find_shortest_way(self.player.world.map, self.player.place, self.player.target_place)
             places_list = way.places_list
             if len(places_list) > 1:
                 next_place = way.places_list[1]

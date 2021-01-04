@@ -9,7 +9,7 @@ class Map:
         self.places = places
 
     def get_place_by_name(self, name):
-        return Place.get_place_by_name(name)
+        return Place.get_place_by_name(self.places, name)
 
 
 def build_map():
@@ -52,11 +52,11 @@ def build_map():
     for row in connections:
         Connection.create_and_connect(places_dict[row[0]], places_dict[row[1]])
 
-    zarosly = Place.get_place_by_name('Заросли')
+    zarosly = Place.get_place_by_name(places, 'Заросли')
     zarosly.add_hero(Goblin())
 
     for _ in range(3):
-        Place.get_place_by_name('Лесок').add_hero(
+        Place.get_place_by_name(places, 'Лесок').add_hero(
             Goblin()
         )
 

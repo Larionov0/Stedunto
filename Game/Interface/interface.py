@@ -21,6 +21,13 @@ class InterfaceManager:
         except:
             return ''
 
+    def press2(self, text):
+        print(text)
+        try:
+            return input()
+        except:
+            return ''
+
     @classmethod
     def instance(cls):
         if cls._instance is None:
