@@ -1,5 +1,5 @@
 from .Heroes import player
-from .Heroes.Dop import skills
+from .Heroes.Dop.Skills.Base.main import skills
 from .Locations.map import build_map, Place
 import pickle
 
@@ -12,7 +12,7 @@ class World:
 
         player_ = player.Player(self)
         map_.places[0].add_hero(player_)
-        player_.skills = list(map(lambda s_class: s_class(), skills.classes))
+        player_.skills = list(map(lambda s_class: s_class(), skills))
         self.data = {
             'map': map_,
             'player': player_,

@@ -17,7 +17,8 @@ class Hero:
     hp = max_hp = 0
     armor = 0
     magic = 0
-    energy = max_energy = 10
+    energy = max_energy = 8
+    energy_recovery = 2
 
     rage = 0
     max_rage = 100
@@ -190,7 +191,7 @@ class Hero:
             print('-' * 40 + "\n")
 
     def before_move(self):
-        self.add_energy(3)
+        self.add_energy(self.energy_recovery)
         self.can_make_move = self.can_use_skill = True
         self.tick_before_move_states()
     

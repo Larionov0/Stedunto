@@ -1,6 +1,7 @@
 import random
 from typing import List, Optional
-from .Dop import colors, skills
+from .Dop import colors
+from .Dop.Skills import skill
 from .hero import Hero
 from ..Interface.interface import InterfaceManager
 from ..Interface.player_interface import PlayerInterface
@@ -13,11 +14,10 @@ interface = InterfaceManager.instance()
 
 class Player(Hero):
     name = 'Леха'
-    hp = max_hp = 100
+    hp = max_hp = 50
     armor = 1
-    fighting = 10
-    strength = 10
-    energy = max_energy = 10
+    strength = 8
+    energy = max_energy = 8
     magic = 0
     coins = 10
 
@@ -29,8 +29,8 @@ class Player(Hero):
 
     def __init__(self, world):
         super().__init__()
-        self.skills: List[skills.SkillCard] = []
-        self.arm: List[skills.SkillCard] = []
+        self.skills: List[skill.SkillCard] = []
+        self.arm: List[skill.SkillCard] = []
         self.player_interface = PlayerInterface(self)
         self.target_place = None
 

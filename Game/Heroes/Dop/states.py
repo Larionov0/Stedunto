@@ -1,4 +1,7 @@
 from Game.Interface import colors
+from Game.Interface.interface import InterfaceManager
+
+interface = InterfaceManager.instance()
 
 
 class State:
@@ -93,7 +96,18 @@ class TurnedAround(State):
     color = colors.CYELLOW
 
     def on_getting(self, hero):
-        print(f"{hero.name} развернулся на {self.number_of_moves} ходов")
+        interface.print_msg(f"{hero.name} развернулся на {self.number_of_moves} ходов")
+
+    def after_move_tick(self, hero):
+        self.decrease_moves(hero)
+
+
+class Ready(State):
+    name = 'готовность'
+    color = colors.CGREEN
+
+    def on_getting(self, hero):
+        interface.print_msg(f'{hero.name} в состоянии готовности на {self.number_of_moves} ходов')
 
     def after_move_tick(self, hero):
         self.decrease_moves(hero)

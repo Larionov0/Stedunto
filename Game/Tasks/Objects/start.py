@@ -1,9 +1,7 @@
 from ..subtask import *
 from ..task import *
 from Game.rewards import Reward
-from Game.Locations.place import Place
 from Game.Heroes.Heroes.goblin import Goblin
-import functools
 
 
 def after_travel(world):
