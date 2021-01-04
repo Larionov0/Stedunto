@@ -54,9 +54,14 @@ class BattleInterface(Interface):
         interface.start_menu()
         print(f"Вы выбрали умение: {skill}")
         print(skill.description)
-        needed_energy = skill.energy + self.player.energy_penalty
+
+        needed_energy = skill.calculate_needed_energy(self.player)
+
         if self.player.energy < needed_energy:
             interface.print_msg(f"Ты не можешь кастонуть эту дичь из-за энергии ({self.player.energy}/{needed_energy})")
+            return
+
+        if not skill.check_effects_on_player(self.player):
             return
 
         ans = input('Кастуем? (y/n): ')

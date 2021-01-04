@@ -1,5 +1,6 @@
 from ..skill import SkillCard, interface
-from Game.globals import STRENGTH
+from Game.globals import STRENGTH, ENERGY
+from Game.Heroes.Dop import states
 
 
 class PryamayaTychka(SkillCard):
@@ -38,4 +39,20 @@ class UdarSRazmahu(SkillCard):
         self.after_cast(player, enemy)
 
 
-skills = [PryamayaTychka, UdarSRazmahu]
+class SmenaStoiki(SkillCard):
+    name = 'Смена стойки'
+    energy = 0
+    freq = 2
+    is_soft = True
+    description = f'Герой восстанавливает 2 {ENERGY} и получает состояние [Готовность] на ход '
+    needed_hero_states = []
+
+    def cast(self, player, enemy):
+        player.add_energy(2)
+        player.get_state(
+            states.Ready(1)
+        )
+        self.after_cast(player, enemy)
+
+
+skills = [PryamayaTychka, UdarSRazmahu, SmenaStoiki]
