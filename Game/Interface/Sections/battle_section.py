@@ -58,7 +58,8 @@ class BattleInterface(Interface):
         needed_energy = skill.calculate_needed_energy(self.player)
 
         if self.player.energy < needed_energy:
-            interface.print_msg(f"Ты не можешь кастонуть эту дичь из-за энергии ({self.player.energy}/{needed_energy})")
+            interface.print_msg(f"{colors.CRED}!{colors.CEND}Ты не можешь "
+                                f"кастонуть эту дичь из-за энергии ({self.player.energy}/{needed_energy})")
             return
 
         if not skill.check_effects_on_player(self.player):

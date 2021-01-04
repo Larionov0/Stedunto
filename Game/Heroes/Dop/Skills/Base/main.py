@@ -1,5 +1,5 @@
 from ..skill import SkillCard, interface
-from Game.globals import STRENGTH, ENERGY
+from Game.globals import STRENGTH, ENERGY, MAGIC
 from Game.Heroes.Dop import states
 
 
@@ -55,4 +55,52 @@ class SmenaStoiki(SkillCard):
         self.after_cast(player, enemy)
 
 
-skills = [PryamayaTychka, UdarSRazmahu, SmenaStoiki]
+class PlusMinusRazryad(SkillCard):
+    name = 'Плюс-минус-разряд'
+    energy = 4
+    freq = 2
+    description = f'Если ты в состоянии [Готовность], выбери противника и проведи комбинацию, \n' \
+                  f'завершающуюся смачным хлопком по ушам, это оглушит его на \n' \
+                  f'ход и нанесет ему {STRENGTH} / 2 урона.\n' \
+                  'Если нету состояния [Готовность], ты можешь потратить 4 hp на сие действо.'
+
+    def cast(self, player, enemy):
+        loose_hp = 0
+        if 'готовность' not in player.states_names():
+            print('У тебя нет состояния [Готовность]')
+            ans = interface.press('Тратим 4 HP? (y/n)')
+            if ans == 'y':
+                loose_hp = 4
+            else:
+                return
+
+        hero = interface.choose_one_from_list(enemy.alive_team, short_str=True)
+        if hero is None:
+            return
+
+        player.loose_hp(loose_hp)
+
+        hero.get_damage(interface.round(player.strength / 2))
+        hero.get_state(states.Stun(1))
+        self.after_cast(player, enemy)
+
+
+class Izzhoga(SkillCard):
+    name = 'Изжога'
+    energy = 2
+    freq = 200
+    description = f'Ты бросаешь выбранному противнику курочку, он жадно на нее набрасывается,\n' \
+                  f'но курочка оказывается переперченной, от чего у сьевшего начинается изжога.\n' \
+                  f'[горение]: 5 + {MAGIC}'
+
+    def cast(self, player, enemy):
+        print('Выбери героя для подброса курочки:')
+        hero = interface.choose_one_from_list(enemy.alive_team, short_str=True)
+        if hero is None:
+            return
+
+        hero.get_state(states.Burning(5 + hero.magic))
+        self.after_cast(player, enemy)
+
+
+skills = [PryamayaTychka, UdarSRazmahu, SmenaStoiki, PlusMinusRazryad, Izzhoga]

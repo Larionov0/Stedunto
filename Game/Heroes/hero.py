@@ -142,9 +142,10 @@ class Hero:
             self.loose_hp(remaining_damage)
 
     def loose_hp(self, hp):
-        self.hp -= hp
-        interface.print_msg(f"{self.colored_name} потерял {hp} hp. Теперь у него {self.hp}/{self.max_hp} hp")
-        self.check_is_alive()
+        if hp > 0:
+            self.hp -= hp
+            interface.print_msg(f"{self.colored_name} потерял {hp} hp. Теперь у него {self.hp}/{self.max_hp} hp")
+            self.check_is_alive()
 
     def check_is_alive(self):
         if self.hp <= 0:
@@ -163,7 +164,6 @@ class Hero:
         pass
 
     def make_move(self):
-        interface.print_line()
         interface.print_msg(f"Ходит герой: {self.colored_name}")
         self.before_move()
         if not self.can_make_move:
@@ -177,12 +177,22 @@ class Hero:
         interface.print_line()
 
     def tick_after_move_states(self):
-        for state in self.states:
+        i = 0
+        while i < len(self.states):
+            state = self.states[i]
             state.after_move_tick(self)
+            if not state.is_alive:
+                i -= 1
+            i += 1
 
     def tick_before_move_states(self):
-        for state in self.states:
+        i = 0
+        while i < len(self.states):
+            state = self.states[i]
             state.before_move_tick(self)
+            if not state.is_alive:
+                i -= 1
+            i += 1
 
     @classmethod
     def print_heroes(cls, heroes_list):

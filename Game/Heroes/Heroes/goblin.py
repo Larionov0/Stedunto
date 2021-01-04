@@ -13,7 +13,7 @@ class Goblin(Mob):
     def __init__(self, team=None):
         super().__init__(team)
         self.name = 'Гоблин ' + random.choice(self.all_names)
-        self.hp = self.max_hp = random.randint(4, 6)
+        self.hp = self.max_hp = random.randint(40, 60)
         self.strength = 4
 
     def what_to_do(self):

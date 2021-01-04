@@ -133,3 +133,7 @@ class InterfaceManager:
                 variants_dict[choice][1]()
                 if return_back is False:
                     return
+
+    @staticmethod
+    def round(value: float):
+        return int(value + 0.5)
