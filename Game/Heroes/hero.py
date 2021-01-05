@@ -139,7 +139,29 @@ class Hero:
         remaining_damage = damage - self.armor
         interface.print_msg(f"{self.colored_name} заблокировал {self.armor} урона. Прошло {remaining_damage}/{damage} урона.")
         if remaining_damage > 0:
+            if self.shields:
+                interface.print_msg(f'Проход урона через щиты...')
+                remaining_damage = self.filter_damage_by_shields(remaining_damage)
+                interface.print_msg(f'Оставшийся после щитов урон: {remaining_damage}')
             self.loose_hp(remaining_damage)
+
+    def filter_damage_by_shields(self, damage):
+        """
+        Calculate damage includes shields on hero.
+        return: int - remaining damage
+        """
+        remaining_damage = damage
+        shields = self.shields
+        for shield in shields:
+            remaining_damage = shield.filter_damage(self, remaining_damage)
+            if shield.is_alive:
+                break
+
+        return remaining_damage
+
+    @property
+    def shields(self) -> List[states.Shield]:
+        return list(filter(lambda state: isinstance(state, states.Shield), self.states))
 
     def loose_hp(self, hp):
         if hp > 0:

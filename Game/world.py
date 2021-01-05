@@ -1,5 +1,6 @@
 from .Heroes import player
 from .Heroes.Dop.Skills.Base.main import skills
+from .Heroes.Dop import states
 from .Locations.map import build_map, Place
 import pickle
 
@@ -20,6 +21,8 @@ class World:
         }
 
         self.stage = 1
+        player_.get_state(states.Shield(3, 2))
+        player_.get_state(states.Shield(5, 10))
 
         start_tasks.travelling_creator(self)
         start_tasks.first_blood_creator(self)

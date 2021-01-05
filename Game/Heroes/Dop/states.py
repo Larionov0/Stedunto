@@ -155,3 +155,30 @@ class Burning(State):
 
     def __str__(self):
         return super().__str__() + f' ({self.power})'
+
+
+class Shield(CountdownState):
+    name = 'Щит'
+    scaling = False
+    color = colors.CGREY
+
+    def __init__(self, number_of_moves, value):
+        super().__init__(number_of_moves)
+        self.value = value
+
+    def on_getting(self, hero):
+        interface.print_msg(f'{hero.colored_name} получил щит {self.value} HP на {self.number_of_moves} ходов')
+
+    def before_move_tick(self, hero):
+        self.decrease_moves(hero)
+
+    def filter_damage(self, hero, damage):
+        self.value -= damage
+        if self.value < 0:
+            self.die(hero)
+            return -self.value
+        else:
+            return 0
+
+    def __str__(self):
+        return super().__str__() + f' [{self.value}]'
