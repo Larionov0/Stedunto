@@ -219,10 +219,10 @@ class Hero:
                f"{self.get_states_and_effects_str()}"
 
     def get_states_and_effects_str(self):
-        text = "States:\n"
+        text = "Состояния:\n"
         for state in self.states:
             text += f"- {state}\n"
-        text += 'Effects:\n'
+        text += 'Эффекты:\n'
         for effect in self.effects:
             text += f"- {effect}\n"
         return text

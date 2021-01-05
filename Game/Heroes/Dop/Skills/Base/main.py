@@ -1,6 +1,7 @@
 from ..skill import SkillCard, interface
 from Game.globals import STRENGTH, ENERGY, MAGIC
 from Game.Heroes.Dop import states
+import random
 
 
 class PryamayaTychka(SkillCard):
@@ -88,7 +89,7 @@ class PlusMinusRazryad(SkillCard):
 class Izzhoga(SkillCard):
     name = 'Изжога'
     energy = 2
-    freq = 200
+    freq = 2
     description = f'Ты бросаешь выбранному противнику курочку, он жадно на нее набрасывается,\n' \
                   f'но курочка оказывается переперченной, от чего у сьевшего начинается изжога.\n' \
                   f'[горение]: 5 + {MAGIC}'
@@ -103,4 +104,45 @@ class Izzhoga(SkillCard):
         self.after_cast(player, enemy)
 
 
-skills = [PryamayaTychka, UdarSRazmahu, SmenaStoiki, PlusMinusRazryad, Izzhoga]
+class NedotochennyyMizinetc(SkillCard):
+    name = 'Недоточенный мизинец'
+    energy = 4
+    freq = 2
+    description = f'Ты взмахиваешь недоточенным мизинцем в сторону противников,\n' \
+                  f'и каждый из них получает |Кровотечение| на два хода, \n' \
+                  f'а выбранный противник дополнительно теряет 1-4 + {MAGIC} урона.'
+
+    def cast(self, player, enemy):
+        interface.print_msg(f'{player.colored_name} взмахивает недоточенным мизинцем')
+        for hero in enemy.alive_team:
+            hero.get_state(
+                states.Bleeding(2)
+            )
+
+        print('Выбери главную жертву:')
+        hero = interface.choose_one_from_list(enemy.alive_team, short_str=True)
+        if hero is None:
+            return
+
+        hero.get_damage(random.randint(1, 4) + player.magic)
+        self.after_cast(player, enemy)
+
+
+class SeriaObychnyhUdarov(SkillCard):
+    name = 'Серия обычных ударов'
+    energy = 5
+    freq = 2
+    description = f'Ты исполняешь серию обычных ударов, нанося противнику 2*{STRENGTH} урона.'
+
+    def cast(self, player, enemy):
+        print(f'{player.colored_name} выбирает цель:')
+        hero = interface.choose_one_from_list(enemy.alive_team, short_str=True)
+        if hero is None:
+            return
+
+        interface.print_msg(f'{player.colored_name} совершает серию обычных ударов по {hero.colored_name}')
+        hero.get_damage(2 * player.strength)
+        self.after_cast(player, enemy)
+
+
+skills = [PryamayaTychka, UdarSRazmahu, SmenaStoiki, PlusMinusRazryad, Izzhoga, NedotochennyyMizinetc, SeriaObychnyhUdarov]

@@ -69,12 +69,15 @@ class Bleeding(CountdownState):
     name = 'кровотечение'
     color = colors.CRED2
 
-    value = 5
-
     def after_move_tick(self, hero):
         interface.print_line()
         print(f"{self.colored_name} у {hero.colored_name}")
-        hero.loose_hp(self.value)
+        if hero.hp < 50:
+            hero.loose_hp(3)
+        elif hero.hp < 100:
+            hero.loose_hp(4)
+        else:
+            hero.loose_hp(5)
         self.decrease_moves(hero)
         interface.print_line()
 
