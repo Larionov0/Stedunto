@@ -21,11 +21,6 @@ class World:
         }
 
         self.stage = 1
-        player_.get_state(states.Shield(3, 2))
-        player_.get_state(states.Shield(5, 10))
-
-        start_tasks.travelling_creator(self)
-        start_tasks.first_blood_creator(self)
 
     @property
     def player(self):

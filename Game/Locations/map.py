@@ -1,6 +1,11 @@
 from .place import Place, Connection
 from .location import Location
 from Game.Heroes.Heroes.goblin import Goblin
+import json
+
+
+class PlaceNotFound(Exception):
+    pass
 
 
 class Map:
@@ -11,8 +16,43 @@ class Map:
     def get_place_by_name(self, name):
         return Place.get_place_by_name(self.places, name)
 
+    def get_place_by_loc_and_name(self, location_name, name):
+        for place in self.places:
+            if place.name == name and place.location.name == location_name:
+                return place
+        raise PlaceNotFound(f'Не нашлось локации с таким названием: {location_name}:{name}')
 
-def build_map():
+    def get_place_by_xname(self, xname='Location_name:place_name'):
+        loc_name, place_name = xname.split(':')
+        return self.get_place_by_loc_and_name(loc_name, place_name)
+
+    @classmethod
+    def create_from_json_file(cls, filename='Game/Locations/map.json'):
+        with open(filename, encoding='utf-8') as file:
+            map_data = json.load(file)
+
+        locations = list(map(lambda loc_dict: Location(loc_dict['name']), map_data['locations']))
+        locations_dict = {loc.name: loc for loc in locations}
+
+        places = []
+        for location_dict in map_data['locations']:
+            for place_name in location_dict['places']:
+                places.append(Place(place_name, location=locations_dict[location_dict['name']]))
+
+        world_map = cls(places, locations)
+
+        connections_dict = map_data['connections']
+        for loc_name in connections_dict:
+            connections_in_loc = connections_dict[loc_name]
+            for connection_list in connections_in_loc:
+                Connection.create_and_connect(
+                    world_map.get_place_by_loc_and_name(loc_name, connection_list[0]),
+                    world_map.get_place_by_loc_and_name(loc_name, connection_list[1])
+                )
+        return world_map
+
+
+def old_build_map():
     locations_list = [
         Location('Статический лес'),
         Location('Динамический лес'),
@@ -62,3 +102,7 @@ def build_map():
 
     map_ = Map(places, locations_list)
     return map_
+
+
+def build_map():
+    return Map.create_from_json_file()
