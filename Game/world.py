@@ -3,6 +3,7 @@ from .Heroes.Dop.Skills.Base.main import skills
 from .Heroes.Dop import states
 from .Locations.map import build_map, Place
 import pickle
+from .Events.Tutorial.main import tutorial_event
 
 from .Tasks.Objects import start as start_tasks
 
@@ -21,6 +22,7 @@ class World:
         }
 
         self.stage = 1
+        tutorial_event(self)
 
     @property
     def player(self):
